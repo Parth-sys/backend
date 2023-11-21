@@ -29,7 +29,7 @@ router.get('/:token', async (req, res) => {
 
 router.post('/verify', async (req, res) => {
     try {
-        const { name, email, password } = req.body
+        const { name,email,password} = req.body
       
         const registerdCredentials = await checkuser(email);
 

@@ -13,9 +13,12 @@ client.connect().then(() => {
 
 
 
-router.post('/login', async (req, res) => {
-    const { email, password } = req.body;
-    var loginCredentials = await AuthenticateUser(email, password)
+
+router.post('/', async(req, res) => {
+    const { email,password} = req.body
+
+    var loginCredentials = await AuthenticateUser(email,password)
+
     console.log(loginCredentials);
   
     if (loginCredentials == "Invalid email or password") {
@@ -27,7 +30,7 @@ router.post('/login', async (req, res) => {
 
     }
     else {
-            res.status(200).json({token:loginCredentials})
+            res.status(200).json({loginCredentials})
     }
 });
 

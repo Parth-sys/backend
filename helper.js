@@ -2,6 +2,7 @@ const User=require('./Models/User')
 const dotenv=require('dotenv')
 const bcrypt=require('bcrypt')
 const mobile=require('./Models/mobile.js')
+const Order=require('./Models/Order.js')
 const Clothes=require('./Models/Clothdata.js')
 const jwt=require('jsonwebtoken');
 const client = require('./redis');
@@ -24,9 +25,10 @@ async function getmdata(){
 
 }
 
-async function getCdata(){
+
+async function getOrderdata(){
     try {
-        const data=await  Clothes.find();
+        const data=await Order.find()
         return data
     } catch (error) {
         console.log(error)
@@ -36,6 +38,45 @@ async function getCdata(){
 }
 
 
+
+
+async function getCdata(){
+    try {
+        const data=await  Clothes.find();
+        console.log(data)
+        return data
+    } catch (error) {
+        console.log(error)
+    }
+
+
+}
+
+
+
+async function insertMproduct(name,varients,Prices,Category,image,description){
+try {
+    const i= await mobile.create({name:name,varients:varients,Prices:Prices,Category:Category,image:image,description:description})
+    return i
+    
+} catch (error) {
+    console.log(error)
+}
+
+
+}
+
+async function insertOrder(name,varients,Prices,Category,image,description){
+    try {
+        const i= await Order.create({name:name,varients:varients,Prices:Prices,Category:Category,image:image,description:description})
+        return i
+        
+    } catch (error) {
+        console.log(error)
+    }
+    
+    
+    }
 
 
 
@@ -55,25 +96,33 @@ try {
 
 }
 
-async function AuthenticateUser(email ,password){
+
+  async function AuthenticateUser(email,password){
+    
     try {
         const usercheck=await User.findOne({email:email});
+
         console.log(usercheck)
 
         const validate=await bcrypt.compare(password,usercheck.password)
 
         if(validate){
+  
             const token=jwt.sign({email},process.env.SECRETKEY_LOGIN)
+
             const response={
                 id:usercheck._id,
                 name:usercheck.name,
                 email:usercheck.email,
                 token:token,
-                status:true
+                status:true,
+                role:false
             }
         
-            await client.set(`key-${email}`,Json.stringify(response))
-            await User.findOneAndUpdate({email:usercheck.email},{$set:{token:token}})
+            await client.set(`key-${email}`,response.email)
+  
+            await User.findOneAndUpdate({email:usercheck.email},{$set:{token:token}},{new:true})
+  
             return response;
         }
         return "Invalid email or password"
@@ -83,10 +132,12 @@ async function AuthenticateUser(email ,password){
 
 }
 
-async function Authorizeuser(token){
-    try{
 
-        const decodetoken=jwt.verify(token,process.env.SECRETKEY_LOGIN)
+async function Authorizeuser(token){
+    try 
+    {
+
+        const decodetoken=jwt.verify(token, process.env.SECRETKEY_LOGIN)
         if(decodetoken){
             const email=decodetoken.email;
             const auth=await client.get(`key-${email}`)
@@ -169,15 +220,17 @@ async function InsertSigupUser(token){
             })
             await newUser.save();
             await userVerify.deleteOne({token:token})
+
             const content = `
             <h4>hi there,</h4>
             <h5>Welcome</h5>
             <p> You are successfully registerd</p>
             <p>Thank you</p>    `
             
-            sendmail(newUser.email,"Registration Success",content)  
+           await sendmail(newUser.email,"Registration Success",content)  
             
-            return `<html>
+            return 
+            `<html>
             <body>
             <h4>hi there,</h4>
             <h5>Link expired</h5>
@@ -207,4 +260,4 @@ async function InsertSigupUser(token){
 
 
 
-module.exports={checkuser,AuthenticateUser,Authorizeuser,getmdata,getCdata,InsertSigupUser,InsertverifyUser};
+module.exports={checkuser,AuthenticateUser,Authorizeuser,getmdata,getCdata,InsertSigupUser,InsertverifyUser,insertMproduct,insertOrder,getOrderdata};

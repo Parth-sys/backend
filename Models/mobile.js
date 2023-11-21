@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 const mobileSchema = mongoose.Schema({
 
-    name: String,
+    name:{type:String,require},
     varients:[],
     Prices: [],
     Category: { type:String,require}, 
