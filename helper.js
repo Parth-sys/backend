@@ -66,6 +66,21 @@ try {
 
 }
 
+async function editMproduct(name,name1,varients1,Prices1,Category1,image1,description1){
+    try {
+        const i= await mobile.updateOne({name:name}, {$set:{name:name1,varients:varients1,Prices:Prices1,Category:Category1,image:image1,description:description1}},{upsert:true} )
+        return i
+        
+    }catch (error) {
+        console.log(error)
+    }
+    
+    
+    }
+
+
+
+
 async function insertOrder(name,varients,Prices,Category,image,description){
     try {
         const i= await Order.create({name:name,varients:varients,Prices:Prices,Category:Category,image:image,description:description})
@@ -260,4 +275,4 @@ async function InsertSigupUser(token){
 
 
 
-module.exports={checkuser,AuthenticateUser,Authorizeuser,getmdata,getCdata,InsertSigupUser,InsertverifyUser,insertMproduct,insertOrder,getOrderdata};
+module.exports={checkuser,AuthenticateUser,Authorizeuser,getmdata,getCdata,InsertSigupUser,InsertverifyUser,insertMproduct,insertOrder,getOrderdata,editMproduct};

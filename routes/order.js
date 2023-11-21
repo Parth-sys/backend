@@ -4,10 +4,14 @@ const {insertOrder,getOrderdata}=require('../helper')
 
 router.post('/',async(req,res)=>{
 try {
-    const{name,varients,Price,Category,image,quantity}=req.body;
+    const{ name,
+        image,
+        quantity,
+        Price,
+        varient}=req.body;
 
-    console.log(name,varients,Price,Category)
-    const r=await insertOrder(name,varients,Price,Category,image,quantity);
+    console.log(name,varient,Price)
+    const r=await insertOrder(name,varient,Price,image,quantity);
     res.send(r)
     
 } catch (error) {
